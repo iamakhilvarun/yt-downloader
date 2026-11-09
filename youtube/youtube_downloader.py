@@ -3,11 +3,13 @@ import yt_dlp
 import json
 
 #  Put your folder Path here 
-video_audio_folder = ""
-audio_only_folder = ""
+video_audio_folder = "/home/akhil69/YOUTUBE_DOWNLOAD/youtube/downloads"
+audio_only_folder = "/home/akhil69/YOUTUBE_DOWNLOAD/youtube/audio"
+thumbnail_folder = "/home/akhil69/YOUTUBE_DOWNLOAD/youtube/thumbnail"
 # making sure the folder exists
 os.makedirs(video_audio_folder, exist_ok=True)
 os.makedirs(audio_only_folder, exist_ok=True)
+os.makedirs(thumbnail_folder, exist_ok=True)
 
 BANNER = r"""
 ██╗   ██╗████████╗   ██████╗ ██╗       ██████╗██╗     ██╗
@@ -82,7 +84,6 @@ def get_audio_info():
 def audio_only():
     ydl_opts = {
         "format": "m4a/bestaudio/best",
-        # ℹ️ See help(yt_dlp.postprocessor) for a list of available Postprocessors and their arguments
         "postprocessors": [
             {  # Extract audio using ffmpeg
                 "key": "FFmpegExtractAudio",
@@ -94,7 +95,15 @@ def audio_only():
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([URL])
 
+def thumbnail():
+    opts = {
+    "skip_download": True,
+    "writethumbnail": True,
+    "outtmpl": os.path.join(thumbnail_folder, "%(title)s.%(ext)s"),
+}
 
+    with yt_dlp.YoutubeDL(opts) as ydl:
+        ydl.download([URL])
 while True:
 
     print("--------------------------------")
@@ -104,7 +113,8 @@ while True:
         """
 1. Video + Audio
 2. Audio Only
-3. Exit
+3. Download Thumbnail
+4. Exit
 """
     )
 
@@ -117,18 +127,20 @@ while True:
         print("         VIDEO + AUDIO")
         print("--------------------------------\n")
         print("=================================")
-        print("         VIDEO INFORAMTION")
+        print("         VIDEO INFORMATION")
         print("=================================\n")
         print("Title    :", data.get("title"))
         print("Uploader :", data.get("uploader"))
+
         duration = data.get("duration")
         if duration:
             minutes = round(duration / 60, 2)
             print("Duration :", minutes, "minutes")
+
         print("Views    :", data.get("view_count"))
         print("=================================\n")
-        print(
 
+        print(
             """
 1. 360p
 2. 480p
@@ -137,7 +149,9 @@ while True:
 5. Back
 """
         )
+
         quality_choice = int(input("Enter the quality: "))
+
         if quality_choice == 5:
             continue
 
@@ -152,26 +166,45 @@ while True:
 
     # AUDIO ONLY
     elif menu_choice == 2:
+
         print("--------------------------------")
         print("             AUDIO")
-        print("--------------------------------\n") 
+        print("--------------------------------\n")
 
         audio = get_audio_info()
+
         if audio is None:
             print("Audio information is not available.")
             continue
 
         print("=================================")
-        print("         AUDIO INFORAMTION")
+        print("         AUDIO INFORMATION")
         print("=================================\n")
         print("Format      :", audio.get("ext"))
         print("Codec       :", audio.get("acodec"))
         print("Bitrate     :", audio.get("abr"))
         print("Sample Rate :", audio.get("asr"))
         print("=================================\n")
+
         audio_only()
 
+    # DOWNLOAD THUMBNAIL
     elif menu_choice == 3:
+
+        print("--------------------------------")
+        print("       DOWNLOAD THUMBNAIL")
+        print("--------------------------------\n")
+
+        print("Title :", data.get("title"))
+        print("=================================\n")
+
+        thumbnail()
+
+        print("Thumbnail downloaded successfully!")
+
+    # EXIT
+    elif menu_choice == 4:
+
         print("Exiting the program...")
         break
 
