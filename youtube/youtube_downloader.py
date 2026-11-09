@@ -104,6 +104,7 @@ def thumbnail():
 
     with yt_dlp.YoutubeDL(opts) as ydl:
         ydl.download([URL])
+
 while True:
 
     print("--------------------------------")
